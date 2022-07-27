@@ -21,7 +21,7 @@ public class UserResource {
     }
 
     @PostMapping("/group/add")
-    public ResponseEntity saveGroup(HttpServletRequest request){
+    public ResponseEntity addGroup(HttpServletRequest request){
         userService.addGroup(request.getParameter("groupName"));
         return ResponseEntity.ok().build();
     }

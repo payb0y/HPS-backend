@@ -87,20 +87,22 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
             }
         }
     }
+
     private LdapAuthoritiesPopulator ldapAuthoritiesPopulator() {
         return new LdapAuthoritiesPopulator() {
             @Override
             public Collection<? extends GrantedAuthority> getGrantedAuthorities(DirContextOperations userData,
                                                                                 String username) {
+                if(userService.getUser(username) == null){
+                    userService.addUser(username);
+                    userService.addRoleToUser(username,"USER");
+                }
                 LinkedList<SimpleGrantedAuthority> res = new LinkedList();
                     userService.getUser(username).getRoles()
                             .forEach( role -> {
                                     log.info(role.getName());
                                     res.add(new SimpleGrantedAuthority(role.getName()));
                             });
-                if(res.isEmpty())
-                    return Arrays.asList(new SimpleGrantedAuthority("USER"));
-                else
                     return res;
 
             }
