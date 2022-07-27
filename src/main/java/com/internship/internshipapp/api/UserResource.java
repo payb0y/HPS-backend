@@ -1,7 +1,5 @@
 package com.internship.internshipapp.api;
 
-import com.internship.internshipapp.domain.Groupe;
-import com.internship.internshipapp.domain.Role;
 import com.internship.internshipapp.domain.User;
 import com.internship.internshipapp.service.UserService;
 import lombok.RequiredArgsConstructor;
@@ -14,7 +12,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/api")
 @RequiredArgsConstructor
-public class UserResouce {
+public class UserResource {
     private final UserService userService;
 
     @GetMapping("/users")
@@ -22,26 +20,19 @@ public class UserResouce {
         return ResponseEntity.ok().body(userService.getUsers());
     }
 
-    @PostMapping("/group/save")
-    public ResponseEntity<Groupe> saveGroupe(HttpServletRequest request){
-        Groupe groupe = new Groupe();
-        groupe.setName(request.getParameter("groupName"));
-        userService.saveGroupe(groupe);
+    @PostMapping("/group/add")
+    public ResponseEntity saveGroup(HttpServletRequest request){
+        userService.addGroup(request.getParameter("groupName"));
         return ResponseEntity.ok().build();
     }
     @PostMapping("/group/delete")
-    public ResponseEntity<Groupe> deleteGroupe(HttpServletRequest request){
-
-        userService.removeGroupe(Integer.parseInt(request.getParameter("groupId")));
+    public ResponseEntity deleteGroup(HttpServletRequest request){
+        userService.removeGroup(request.getParameter("groupName"));
         return ResponseEntity.ok().build();
     }
+
     @PostMapping("/user/addUserToGroup")
-    public ResponseEntity<Groupe> addUserToGroup(HttpServletRequest request){
-        if (userService.getUser(request.getParameter("username"))
-                .getGroupes()
-                .contains(userService.getGroupe(request.getParameter("groupName")))){
-            return ResponseEntity.badRequest().build();
-        }
+    public ResponseEntity addUserToGroup(HttpServletRequest request){
         userService.addUserToGroup(request.getParameter("username"),request.getParameter("groupName"));
         return ResponseEntity.ok().build();
     }

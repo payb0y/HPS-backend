@@ -39,9 +39,7 @@ public class CustomAuthenticationFilter extends UsernamePasswordAuthenticationFi
     public User getUser(String username){
         User user = userService.getUser(username);
         if(user == null){
-            user = new User();
-            user.setUsername(username);
-            userService.saveUser(user);
+            userService.addUser(username);
             userService.addRoleToUser(username,"USER");
             return userService.getUser(username);
         }
