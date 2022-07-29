@@ -11,15 +11,16 @@ public interface UserService {
     void addRole(String roleName);
     void addGroup(String groupName);
     void removeGroup(String groupName);
-    void addUserToGroup(String username,String groupName);
-    void addUserToGroups(String username,List<String> groupName);
+    void addUserToGroups(String username,List<String> groupNames);
+    void addRolesToUser(String username,List<String> roleNames);
+    void addRoleToUser(String username,String name);
 
-    void addRoleToUser(String username, String roleName);
     User getUser(String username);
     Role getRole(String roleName);
     Groupe getGroup(String groupName);
     List<Object> getUsers();
     List<Groupe> getGroups();
+    List<Role> getRoles();
 
 
 }

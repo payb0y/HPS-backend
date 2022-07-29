@@ -31,7 +31,7 @@ public class UserServiceImpl implements UserService {
         userRepo.save(user);
     }
     @Override
-    public List<Object> getUsers() {
+    public List<Object> getUsers(){
         log.info("Fetching all users");
         List<Object> users = new ArrayList<>();
         ObjectMapper objectMapper = new ObjectMapper();
@@ -50,27 +50,31 @@ public class UserServiceImpl implements UserService {
         log.info("Fetching all groups");
         return groupeRepo.findAll();
     }
-
+    public List<Role> getRoles() {
+        log.info("Fetching all roles");
+        return roleRepo.findAll();
+    }
     @Override
     public User getUser(String username) {
         log.info("Fetching user {}",username);
         return userRepo.findByUsername(username);
     }
 
-    @Override
-    public void addUserToGroup(String username, String groupeName) {
-        log.info("Adding user {} to group {}",username,groupeName);
-        User user = userRepo.findByUsername(username);
-        Groupe groupe = groupeRepo.findByName(groupeName);
-        user.getGroupes().add(groupe);
-    }
-    public void addUserToGroups(String username, List<String> groupeName) {
-        log.info("Adding user {} to group {}",username,groupeName);
+    public void addUserToGroups(String username, List<String> groupName) {
+        log.info("Adding user {} to groups {}",username,groupName);
         User user = userRepo.findByUsername(username);
         user.getGroupes().clear();
-        groupeName.forEach(group->{
-            Groupe groupe = groupeRepo.findByName(group);
-            user.getGroupes().add(groupe);
+        groupName.forEach(group->{
+            user.getGroupes().add(groupeRepo.findByName(group));
+        });
+
+    }
+    public void addRolesToUser(String username, List<String> roleNames) {
+        log.info("Adding roles {} to user {}",roleNames,username);
+        User user = userRepo.findByUsername(username);
+        user.getRoles().clear();
+        roleNames.forEach(role->{
+            user.getRoles().add(roleRepo.findByName(role));
         });
 
     }
@@ -103,14 +107,14 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void addGroup(String groupName) {
-        log.info("Saving new groupe {} to the database",groupName);
+        log.info("Saving new group {} to the database",groupName);
         Groupe group = new Groupe();
         group.setName(groupName);
         groupeRepo.save(group);
     }
 
     public void removeGroup(String groupName) {
-        log.info("removing groupe {} from the database", groupName);
+        log.info("removing group {} from the database", groupName);
         groupeRepo.delete(groupeRepo.findByName(groupName));
     }
 
