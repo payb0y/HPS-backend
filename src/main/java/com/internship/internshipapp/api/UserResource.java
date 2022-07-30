@@ -19,7 +19,6 @@ import java.util.Map;
 @Slf4j
 public class UserResource {
     private final UserService userService;
-    private LdapService ldapService = new LdapService();
 
     @GetMapping("/users")
     public ResponseEntity<List<Object>> getUsers(){

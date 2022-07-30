@@ -7,6 +7,7 @@ import com.internship.internshipapp.domain.User;
 import com.internship.internshipapp.repo.GroupeRepo;
 import com.internship.internshipapp.repo.RoleRepo;
 import com.internship.internshipapp.repo.UserRepo;
+import com.internship.internshipapp.util.Utility;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -22,6 +23,7 @@ public class UserServiceImpl implements UserService {
     private final UserRepo userRepo;
     private final RoleRepo roleRepo;
     private final GroupeRepo groupeRepo;
+    private Utility utility = new Utility();
     private LdapService ldapService = new LdapService();
     @Override
     public void addUser(String username) {
@@ -33,17 +35,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public List<Object> getUsers(){
         log.info("Fetching all users");
-        List<Object> users = new ArrayList<>();
-        ObjectMapper objectMapper = new ObjectMapper();
-        userRepo.findAll().forEach(user-> {
-            try {
-                Map<String, Object> map = objectMapper.convertValue(user, Map.class);
-                map.put("ldapGroups",ldapService.getAllGroups(user.getUsername()));
-                users.add(map);
-            } catch (NamingException e) {
-                throw new RuntimeException(e);
-            }});
-        return users;
+        return utility.appendLdapGroupsToUsers(userRepo.findAll());
     }
     @Override
     public List<Groupe> getGroups() {
@@ -60,11 +52,11 @@ public class UserServiceImpl implements UserService {
         return userRepo.findByUsername(username);
     }
 
-    public void addUserToGroups(String username, List<String> groupName) {
-        log.info("Adding user {} to groups {}",username,groupName);
+    public void addUserToGroups(String username, List<String> groupNames) {
+        log.info("Adding user {} to groups {}",username,groupNames);
         User user = userRepo.findByUsername(username);
         user.getGroupes().clear();
-        groupName.forEach(group->{
+        groupNames.forEach(group->{
             user.getGroupes().add(groupeRepo.findByName(group));
         });
 
