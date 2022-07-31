@@ -2,7 +2,6 @@ package com.internship.internshipapp.api;
 
 import com.internship.internshipapp.domain.Groupe;
 import com.internship.internshipapp.domain.Role;
-import com.internship.internshipapp.service.LdapService;
 import com.internship.internshipapp.service.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

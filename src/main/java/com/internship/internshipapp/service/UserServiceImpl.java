@@ -1,6 +1,5 @@
 package com.internship.internshipapp.service;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.internship.internshipapp.domain.Groupe;
 import com.internship.internshipapp.domain.Role;
 import com.internship.internshipapp.domain.User;
@@ -12,19 +11,15 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
-import javax.naming.NamingException;
 import javax.transaction.Transactional;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 @Service @RequiredArgsConstructor @Transactional @Slf4j
 public class UserServiceImpl implements UserService {
     private final UserRepo userRepo;
     private final RoleRepo roleRepo;
     private final GroupeRepo groupeRepo;
-    private Utility utility = new Utility();
-    private LdapService ldapService = new LdapService();
+    private final  Utility utility = new Utility();
     @Override
     public void addUser(String username) {
         log.info("Saving new user {} to the database",username);
@@ -56,18 +51,14 @@ public class UserServiceImpl implements UserService {
         log.info("Adding user {} to groups {}",username,groupNames);
         User user = userRepo.findByUsername(username);
         user.getGroupes().clear();
-        groupNames.forEach(group->{
-            user.getGroupes().add(groupeRepo.findByName(group));
-        });
+        groupNames.forEach(group->user.getGroupes().add(groupeRepo.findByName(group)));
 
     }
     public void addRolesToUser(String username, List<String> roleNames) {
         log.info("Adding roles {} to user {}",roleNames,username);
         User user = userRepo.findByUsername(username);
         user.getRoles().clear();
-        roleNames.forEach(role->{
-            user.getRoles().add(roleRepo.findByName(role));
-        });
+        roleNames.forEach(role->user.getRoles().add(roleRepo.findByName(role)));
 
     }
     @Override

@@ -8,13 +8,11 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.ldap.core.DirContextOperations;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
-import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.crypto.password.LdapShaPasswordEncoder;
 import org.springframework.security.ldap.userdetails.LdapAuthoritiesPopulator;
@@ -28,7 +26,6 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.util.Collection;
 import java.util.LinkedList;
 
 import static org.springframework.http.HttpMethod.GET;
@@ -62,7 +59,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         http.authorizeRequests().anyRequest().authenticated();
         http.addFilter(new CustomAuthenticationFilter(authenticationManagerBean(), userService));
         http.addFilterBefore(new CustomAuthorizationFilter(), UsernamePasswordAuthenticationFilter.class);
-        http.addFilterBefore(new CorsFilter(), ChannelProcessingFilter.class);;
+        http.addFilterBefore(new CorsFilter(), ChannelProcessingFilter.class);
     }
     @Bean
     @Override
@@ -87,23 +84,16 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     }
 
     private LdapAuthoritiesPopulator ldapAuthoritiesPopulator() {
-        return new LdapAuthoritiesPopulator() {
-            @Override
-            public Collection<? extends GrantedAuthority> getGrantedAuthorities(DirContextOperations userData,
-                                                                                String username) {
-                if(userService.getUser(username) == null){
-                    userService.addUser(username);
-                    userService.addRoleToUser(username,"USER");
-                }
-                LinkedList<SimpleGrantedAuthority> res = new LinkedList();
-                    userService.getUser(username).getRoles()
-                            .forEach( role -> {
-                                    log.info(role.getName());
-                                    res.add(new SimpleGrantedAuthority(role.getName()));
-                            });
-                    return res;
-
+        return (userData, username) -> {
+            if(userService.getUser(username) == null){
+                userService.addUser(username);
+                userService.addRoleToUser(username,"USER");
             }
+            LinkedList<SimpleGrantedAuthority> res = new LinkedList();
+                userService.getUser(username).getRoles()
+                        .forEach( role -> res.add(new SimpleGrantedAuthority(role.getName())));
+                return res;
+
         };
     }
 }
