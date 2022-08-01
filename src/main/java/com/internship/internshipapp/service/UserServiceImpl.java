@@ -19,13 +19,27 @@ public class UserServiceImpl implements UserService {
     private final UserRepo userRepo;
     private final RoleRepo roleRepo;
     private final GroupeRepo groupeRepo;
-    private final  Utility utility = new Utility();
+    private final Utility utility = new Utility();
     @Override
     public void addUser(String username) {
         log.info("Saving new user {} to the database",username);
         User user = new User();
         user.setUsername(username);
         userRepo.save(user);
+    }
+    @Override
+    public void addRole(String roleName) {
+        log.info("Saving new role {} to the database",roleName);
+        Role role = new Role();
+        role.setName(roleName);
+        roleRepo.save(role);
+    }
+    @Override
+    public void addGroup(String groupName) {
+        log.info("Saving new group {} to the database",groupName);
+        Groupe group = new Groupe();
+        group.setName(groupName);
+        groupeRepo.save(group);
     }
     @Override
     public List<Object> getUsers(){
@@ -46,7 +60,14 @@ public class UserServiceImpl implements UserService {
         log.info("Fetching user {}",username);
         return userRepo.findByUsername(username);
     }
-
+    public Role getRole(String roleName) {
+        log.info("Fetching role {}",roleName);
+        return roleRepo.findByName(roleName);
+    }
+    public Groupe getGroup(String groupName) {
+        log.info("Fetching group {}",groupName);
+        return groupeRepo.findByName(groupName);
+    }
     public void addUserToGroups(String username, List<String> groupNames) {
         log.info("Adding user {} to groups {}",username,groupNames);
         User user = userRepo.findByUsername(username);
@@ -68,34 +89,6 @@ public class UserServiceImpl implements UserService {
         Role role = roleRepo.findByName(roleName);
         user.getRoles().add(role);
     }
-
-    @Override
-    public void addRole(String roleName) {
-        log.info("Saving new role {} to the database",roleName);
-        Role role = new Role();
-        role.setName(roleName);
-        roleRepo.save(role);
-    }
-
-    public Role getRole(String roleName) {
-        log.info("Fetching role {}",roleName);
-        return roleRepo.findByName(roleName);
-    }
-
-    public Groupe getGroup(String groupName) {
-        log.info("Fetching group {}",groupName);
-        return groupeRepo.findByName(groupName);
-    }
-
-
-    @Override
-    public void addGroup(String groupName) {
-        log.info("Saving new group {} to the database",groupName);
-        Groupe group = new Groupe();
-        group.setName(groupName);
-        groupeRepo.save(group);
-    }
-
     public void removeGroup(String groupName) {
         log.info("removing group {} from the database", groupName);
         groupeRepo.delete(groupeRepo.findByName(groupName));

@@ -1,6 +1,5 @@
 package com.internship.internshipapp.security;
 
-
 import com.internship.internshipapp.filter.CustomAuthenticationFilter;
 import com.internship.internshipapp.filter.CustomAuthorizationFilter;
 import com.internship.internshipapp.service.UserService;
@@ -50,7 +49,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .passwordEncoder(new LdapShaPasswordEncoder())
                 .passwordAttribute("userPassword");
     }
-
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http.csrf().disable();
@@ -82,7 +80,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
             }
         }
     }
-
     private LdapAuthoritiesPopulator ldapAuthoritiesPopulator() {
         return (userData, username) -> {
             if(userService.getUser(username) == null){
@@ -90,10 +87,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 userService.addRoleToUser(username,"USER");
             }
             LinkedList<SimpleGrantedAuthority> res = new LinkedList();
-                userService.getUser(username).getRoles()
-                        .forEach( role -> res.add(new SimpleGrantedAuthority(role.getName())));
-                return res;
-
+            userService.getUser(username).getRoles()
+                    .forEach( role -> res.add(new SimpleGrantedAuthority(role.getName())));
+            return res;
         };
     }
 }

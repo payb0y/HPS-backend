@@ -41,7 +41,6 @@ public class UserResource {
         userService.removeGroup(request.getParameter("groupName"));
         return ResponseEntity.ok().build();
     }
-
     @PostMapping("/user/addUserToGroups")
     public ResponseEntity addUserToGroups(@RequestBody Map<String, Object> payload){
         userService.addUserToGroups((String) payload.get("username"), (List<String>) payload.get("names"));

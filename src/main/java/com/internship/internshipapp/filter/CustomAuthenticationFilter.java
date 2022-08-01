@@ -6,6 +6,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.internship.internshipapp.domain.Role;
 import com.internship.internshipapp.domain.User;
 import com.internship.internshipapp.service.UserService;
+import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.MediaType;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -22,13 +23,10 @@ import java.io.IOException;
 import java.util.*;
 import java.util.stream.Collectors;
 @Slf4j
+@AllArgsConstructor
 public class CustomAuthenticationFilter extends UsernamePasswordAuthenticationFilter {
     private final AuthenticationManager authenticationManager;
     private final UserService userService;
-    public CustomAuthenticationFilter(AuthenticationManager authenticationManager, UserService userService){
-        this.authenticationManager = authenticationManager;
-        this.userService = userService;
-    }
     @Override
     public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) throws AuthenticationException {
         String username = request.getParameter("username");
@@ -36,7 +34,6 @@ public class CustomAuthenticationFilter extends UsernamePasswordAuthenticationFi
         UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(username,password);
         return authenticationManager.authenticate(authenticationToken);
     }
-
     @Override
     protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain, Authentication authentication) throws IOException, ServletException {
         User user = userService.getUser(request.getParameter("username"));
@@ -47,11 +44,9 @@ public class CustomAuthenticationFilter extends UsernamePasswordAuthenticationFi
                 .withIssuer(request.getRequestURL().toString())
                 .withClaim("roles",user.getRoles().stream().map(Role::getName).collect(Collectors.toList()))
                 .sign(algorithm);
-
         Map<String, String> token = new HashMap<>();
         token.put("access_token",access_token);
         response.setContentType(MediaType.APPLICATION_JSON_VALUE);
         new ObjectMapper().writeValue(response.getOutputStream(),token);
     }
-
 }
