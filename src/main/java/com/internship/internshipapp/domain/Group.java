@@ -5,16 +5,12 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
-import java.util.ArrayList;
-import java.util.Collection;
-
 @Entity
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class Groupe {
+@Table(name = "`group`")
+public class Group {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
     private String name;
 }

@@ -1,14 +1,15 @@
 package com.internship.internshipapp.api;
 
-import com.internship.internshipapp.domain.Groupe;
+import com.internship.internshipapp.domain.Group;
 import com.internship.internshipapp.domain.Role;
+import com.internship.internshipapp.domain.User;
 import com.internship.internshipapp.service.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import javax.servlet.http.HttpServletRequest;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
@@ -24,23 +25,14 @@ public class UserResource {
         return ResponseEntity.ok().body(userService.getUsers());
     }
     @GetMapping("/groups")
-    public ResponseEntity<List<Groupe>> getGroups(){
+    public ResponseEntity<List<Group>> getGroups(){
         return ResponseEntity.ok().body(userService.getGroups());
     }
     @GetMapping("/roles")
     public ResponseEntity<List<Role>> getRoles(){
         return ResponseEntity.ok().body(userService.getRoles());
     }
-    @PostMapping("/group/add")
-    public ResponseEntity addGroup(HttpServletRequest request){
-        userService.addGroup(request.getParameter("groupName"));
-        return ResponseEntity.ok().build();
-    }
-    @PostMapping("/group/delete")
-    public ResponseEntity deleteGroup(HttpServletRequest request){
-        userService.removeGroup(request.getParameter("groupName"));
-        return ResponseEntity.ok().build();
-    }
+
     @PostMapping("/user/addUserToGroups")
     public ResponseEntity addUserToGroups(@RequestBody Map<String, Object> payload){
         userService.addUserToGroups((String) payload.get("username"), (List<String>) payload.get("names"));
@@ -49,6 +41,20 @@ public class UserResource {
     @PostMapping("/user/addRolesToUser")
     public ResponseEntity addRolesToUser(@RequestBody Map<String, Object> payload){
         userService.addRolesToUser((String) payload.get("username"), (List<String>) payload.get("names"));
+        return ResponseEntity.ok().build();
+    }
+    @PostMapping("/user/getUserGroups")
+    public ResponseEntity<Collection<Group>> getUserGroups(@RequestBody User user){
+        return ResponseEntity.ok().body(userService.getUser(user.getUsername()).getGroups());
+    }
+    @PostMapping("/group/delete")
+    public ResponseEntity deleteGroup(@RequestBody Group group){
+        userService.removeGroup(group.getName());
+        return ResponseEntity.ok().build();
+    }
+    @PostMapping("/group/add")
+    public ResponseEntity addGroup(@RequestBody Group group){
+        userService.addGroup(group);
         return ResponseEntity.ok().build();
     }
 }

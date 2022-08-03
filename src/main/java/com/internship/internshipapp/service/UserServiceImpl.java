@@ -1,9 +1,9 @@
 package com.internship.internshipapp.service;
 
-import com.internship.internshipapp.domain.Groupe;
+import com.internship.internshipapp.domain.Group;
 import com.internship.internshipapp.domain.Role;
 import com.internship.internshipapp.domain.User;
-import com.internship.internshipapp.repo.GroupeRepo;
+import com.internship.internshipapp.repo.GroupRepo;
 import com.internship.internshipapp.repo.RoleRepo;
 import com.internship.internshipapp.repo.UserRepo;
 import com.internship.internshipapp.util.Utility;
@@ -18,8 +18,7 @@ import java.util.List;
 public class UserServiceImpl implements UserService {
     private final UserRepo userRepo;
     private final RoleRepo roleRepo;
-    private final GroupeRepo groupeRepo;
-    private final Utility utility = new Utility();
+    private final GroupRepo groupRepo;
     @Override
     public void addUser(String username) {
         log.info("Saving new user {} to the database",username);
@@ -35,21 +34,19 @@ public class UserServiceImpl implements UserService {
         roleRepo.save(role);
     }
     @Override
-    public void addGroup(String groupName) {
-        log.info("Saving new group {} to the database",groupName);
-        Groupe group = new Groupe();
-        group.setName(groupName);
-        groupeRepo.save(group);
+    public void addGroup(Group group) {
+        log.info("Saving new group {} to the database",group.getName());
+        groupRepo.save(group);
     }
     @Override
     public List<Object> getUsers(){
         log.info("Fetching all users");
-        return utility.appendLdapGroupsToUsers(userRepo.findAll());
+        return Utility.appendLdapGroupsToUsers(userRepo.findAll());
     }
     @Override
-    public List<Groupe> getGroups() {
+    public List<Group> getGroups() {
         log.info("Fetching all groups");
-        return groupeRepo.findAll();
+        return groupRepo.findAll();
     }
     public List<Role> getRoles() {
         log.info("Fetching all roles");
@@ -64,15 +61,15 @@ public class UserServiceImpl implements UserService {
         log.info("Fetching role {}",roleName);
         return roleRepo.findByName(roleName);
     }
-    public Groupe getGroup(String groupName) {
+    public Group getGroup(String groupName) {
         log.info("Fetching group {}",groupName);
-        return groupeRepo.findByName(groupName);
+        return groupRepo.findByName(groupName);
     }
     public void addUserToGroups(String username, List<String> groupNames) {
         log.info("Adding user {} to groups {}",username,groupNames);
         User user = userRepo.findByUsername(username);
-        user.getGroupes().clear();
-        groupNames.forEach(group->user.getGroupes().add(groupeRepo.findByName(group)));
+        user.getGroups().clear();
+        groupNames.forEach(group->user.getGroups().add(groupRepo.findByName(group)));
 
     }
     public void addRolesToUser(String username, List<String> roleNames) {
@@ -91,7 +88,7 @@ public class UserServiceImpl implements UserService {
     }
     public void removeGroup(String groupName) {
         log.info("removing group {} from the database", groupName);
-        groupeRepo.delete(groupeRepo.findByName(groupName));
+        groupRepo.delete(groupRepo.findByName(groupName));
     }
 
 

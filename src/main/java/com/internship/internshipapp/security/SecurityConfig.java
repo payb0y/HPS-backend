@@ -28,6 +28,7 @@ import java.io.IOException;
 import java.util.LinkedList;
 
 import static org.springframework.http.HttpMethod.GET;
+import static org.springframework.http.HttpMethod.POST;
 import static org.springframework.security.config.http.SessionCreationPolicy.STATELESS;
 
 @Configuration
@@ -53,7 +54,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     protected void configure(HttpSecurity http) throws Exception {
         http.csrf().disable();
         http.sessionManagement().sessionCreationPolicy(STATELESS);
-        http.authorizeRequests().antMatchers(GET,"/api/**").hasAnyAuthority("ADMIN");
+        http.authorizeRequests().antMatchers(GET,"/api/**").hasAnyAuthority("ADMIN","SUPER_ADMIN");
+        http.authorizeRequests().antMatchers(POST,"/api/user/getUserGroups").hasAnyAuthority("USER");
         http.authorizeRequests().anyRequest().authenticated();
         http.addFilter(new CustomAuthenticationFilter(authenticationManagerBean(), userService));
         http.addFilterBefore(new CustomAuthorizationFilter(), UsernamePasswordAuthenticationFilter.class);

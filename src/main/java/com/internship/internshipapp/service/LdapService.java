@@ -2,6 +2,7 @@ package com.internship.internshipapp.service;
 
 import org.json.simple.JSONObject;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Service;
 
 import javax.naming.Context;
 import javax.naming.NamingEnumeration;
