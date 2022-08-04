@@ -89,8 +89,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 userService.addRoleToUser(username,"USER");
             }
             LinkedList<SimpleGrantedAuthority> res = new LinkedList();
-            userService.getUser(username).getRoles()
-                    .forEach( role -> res.add(new SimpleGrantedAuthority(role.getName())));
+            res.add(new SimpleGrantedAuthority(userService.getUser(username).getRole().getName()));
             return res;
         };
     }

@@ -1,5 +1,6 @@
 package com.internship.internshipapp.domain;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -13,8 +14,13 @@ import java.util.Collection;
 public class User {
     @Id
     private String username;
-    @ManyToMany(fetch= FetchType.EAGER)
-    private Collection<Role> roles = new ArrayList<>();
-    @ManyToMany(fetch= FetchType.LAZY)
+    @ManyToOne
+    private Role role;
+
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JsonIgnoreProperties("users")
+    @JoinTable(name="user_groups",
+            joinColumns = @JoinColumn(name="user_username"),
+            inverseJoinColumns = @JoinColumn(name="groups_name"))
     private Collection<Group> groups = new ArrayList<>();
 }
