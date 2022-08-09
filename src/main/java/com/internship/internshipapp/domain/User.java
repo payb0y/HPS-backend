@@ -18,7 +18,6 @@ public class User {
     private Role role;
 
     @ManyToMany(fetch = FetchType.EAGER)
-    @JsonIgnoreProperties("users")
     @JoinTable(name="user_groups",
             joinColumns = @JoinColumn(name="user_username"),
             inverseJoinColumns = @JoinColumn(name="groups_name"))

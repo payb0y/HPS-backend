@@ -16,8 +16,7 @@ import java.util.Collection;
 public class Environment {
     @Id
     private String name;
-    @ManyToMany(mappedBy = "environments", fetch = FetchType.EAGER)
-    @JsonIgnoreProperties("environments")
 
+    @ManyToMany(mappedBy = "environments", fetch = FetchType.EAGER)
     private Collection<Group> groups = new ArrayList<>();
 }

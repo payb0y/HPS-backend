@@ -21,12 +21,11 @@ public class Group {
     private String name;
 
     @ManyToMany(fetch = FetchType.EAGER)
-    @JsonIgnoreProperties("groups")
     @JoinTable(name="environment_groups",
     joinColumns = @JoinColumn(name="groups_name"),
     inverseJoinColumns = @JoinColumn(name="environment_name"))
     private Collection<Environment> environments = new ArrayList<>();
-    @JsonIgnoreProperties("groups")
+
     @ManyToMany(mappedBy = "groups",fetch = FetchType.LAZY)
     private Collection<User> users = new ArrayList<>();
 
