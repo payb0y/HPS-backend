@@ -1,6 +1,7 @@
 package com.internship.internshipapp.api;
 
 import com.internship.internshipapp.domain.Group;
+import com.internship.internshipapp.dto.GroupDTO;
 import com.internship.internshipapp.service.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -18,14 +19,14 @@ public class GroupResource {
     private final UserService userService;
 
     @GetMapping("/groups")
-    public ResponseEntity<List<Group>> getGroups() {
+    public ResponseEntity<List<GroupDTO>> getGroups() {
         return ResponseEntity.ok().body(userService.getGroups());
     }
 
     @PostMapping("/group/delete")
     public ResponseEntity deleteGroup(@RequestBody Group group) {
         if (userService.getGroup(group) != null) {
-            userService.removeGroup(group.getName());
+            userService.removeGroup(group);
             return ResponseEntity.ok().build();
         }
         return ResponseEntity.badRequest().body("GROUP DOESN'T EXIST");
