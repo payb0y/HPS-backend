@@ -26,25 +26,18 @@ public class UserResource {
         return ResponseEntity.ok().body(userService.getUsers());
     }
 
-    @GetMapping("/groups")
-    public ResponseEntity<List<Group>> getGroups() {
-        return ResponseEntity.ok().body(userService.getGroups());
-    }
-
     @GetMapping("/roles")
     public ResponseEntity<List<Role>> getRoles() {
         return ResponseEntity.ok().body(userService.getRoles());
     }
 
-    @GetMapping("/environments")
-    public ResponseEntity<List<Environment>> getEnvironments() {
-        return ResponseEntity.ok().body(userService.getEnvironments());
-    }
-
     @PostMapping("/user/addUserToGroups")
     public ResponseEntity addUserToGroups(@RequestBody Map<String, Object> payload) {
-        userService.addUserToGroups((String) payload.get("username"), (List<String>) payload.get("names"));
-        return ResponseEntity.ok().build();
+        if (userService.getUser((String) payload.get("username")) != null) {
+            userService.addUserToGroups((String) payload.get("username"), (List<String>) payload.get("names"));
+            return ResponseEntity.ok().build();
+        }
+        return ResponseEntity.badRequest().body("USER DOESN'T EXIST");
     }
 
     @PostMapping("/user/getUserGroups")
@@ -57,45 +50,14 @@ public class UserResource {
         return ResponseEntity.ok().body(userService.getUserEnvironments(user.getUsername()));
     }
 
-    @PostMapping("/group/addEnvironmentsToGroup")
-    public ResponseEntity addEnvironmentsToGroup(@RequestBody Map<String, Object> payload) {
-        userService.addEnvironmentsToGroup((String) payload.get("name"), (List<String>) payload.get("names"));
-        return ResponseEntity.ok().build();
-    }
-
-    @PostMapping("/group/delete")
-    public ResponseEntity deleteGroup(@RequestBody Group group) {
-        userService.removeGroup(group.getName());
-        return ResponseEntity.ok().build();
-    }
     @PostMapping("/user/addRoleToUser")
     public ResponseEntity addRoleToUser(@RequestBody Map<String, Object> payload) {
-        userService.addRoleToUser((String) payload.get("username"), (String) payload.get("name"));
-        return ResponseEntity.ok().build();
-    }
-    @PostMapping("/group/add")
-    public ResponseEntity addGroup(@RequestBody Group group) {
-        if (userService.getGroup(group) == null) {
-            userService.addGroup(group);
+        if (userService.getUser((String) payload.get("username")) != null) {
+            userService.addRoleToUser((String) payload.get("username"), (String) payload.get("name"));
             return ResponseEntity.ok().build();
         }
-        return ResponseEntity.badRequest().body("GROUP ALREADY EXISTS");
+        return ResponseEntity.badRequest().body("USER DOESN'T EXIST");
     }
-    @PostMapping("/environment/add")
-    public ResponseEntity addEnvironment(@RequestBody Environment environment) {
-        if (userService.getEnvironment(environment) == null) {
-            userService.addEnvironment(environment);
-            return ResponseEntity.ok().build();
-        }
-        return ResponseEntity.badRequest().body("ENVIRONMENT ALREADY EXISTS");
-    }
-    @PostMapping("/environment/delete")
-    public ResponseEntity deleteEnvironment(@RequestBody Environment environment) {
-        log.info(userService.getEnvironment(environment).getName());
-        if (userService.getEnvironment(environment) != null) {
-            userService.removeEnvironment(environment);
-            return ResponseEntity.ok().build();
-        }
-        return ResponseEntity.badRequest().body("ENVIRONMENT DOESN'T EXIST");
-    }
+
+
 }
