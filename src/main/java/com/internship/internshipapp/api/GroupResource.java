@@ -24,7 +24,7 @@ public class GroupResource {
     }
 
     @PostMapping("/group/delete")
-    public ResponseEntity deleteGroup(@RequestBody Group group) {
+    public ResponseEntity deleteGroup(@RequestBody GroupDTO group) {
         if (userService.getGroup(group) != null) {
             userService.removeGroup(group);
             return ResponseEntity.ok().build();
@@ -33,7 +33,7 @@ public class GroupResource {
     }
 
     @PostMapping("/group/add")
-    public ResponseEntity addGroup(@RequestBody Group group) {
+    public ResponseEntity addGroup(@RequestBody GroupDTO group) {
         if (userService.getGroup(group) == null) {
             userService.addGroup(group);
             return ResponseEntity.ok().build();

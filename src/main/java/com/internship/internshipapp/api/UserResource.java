@@ -4,6 +4,10 @@ import com.internship.internshipapp.domain.Environment;
 import com.internship.internshipapp.domain.Group;
 import com.internship.internshipapp.domain.Role;
 import com.internship.internshipapp.domain.User;
+import com.internship.internshipapp.dto.EnvironmentDTO;
+import com.internship.internshipapp.dto.GroupDTO;
+import com.internship.internshipapp.dto.RoleDTO;
+import com.internship.internshipapp.dto.UserDTO;
 import com.internship.internshipapp.service.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -25,10 +29,13 @@ public class UserResource {
     public ResponseEntity<List<Object>> getUsers() {
         return ResponseEntity.ok().body(userService.getUsers());
     }
-
+    @GetMapping("/user/getUser")
+    public ResponseEntity<UserDTO> getUser(@RequestBody User user) {
+        return ResponseEntity.ok().body(userService.getUser(user.getUsername()));
+    }
     @GetMapping("/roles")
-    public ResponseEntity<List<Role>> getRoles() {
-        return ResponseEntity.ok().body(userService.getRoles());
+    public ResponseEntity<List<RoleDTO>> getRoles() {
+        return ResponseEntity.ok().body(userService.getRole());
     }
 
     @PostMapping("/user/addUserToGroups")
@@ -41,12 +48,12 @@ public class UserResource {
     }
 
     @PostMapping("/user/getUserGroups")
-    public ResponseEntity<Collection<Group>> getUserGroups(@RequestBody User user) {
+    public ResponseEntity<Collection<GroupDTO>> getUserGroups(@RequestBody User user) {
         return ResponseEntity.ok().body(userService.getUser(user.getUsername()).getGroups());
     }
 
     @PostMapping("/user/getUserEnvironments")
-    public ResponseEntity<Collection<Environment>> getUserEnvironments(@RequestBody User user) {
+    public ResponseEntity<Collection<EnvironmentDTO>> getUserEnvironments(@RequestBody User user) {
         return ResponseEntity.ok().body(userService.getUserEnvironments(user.getUsername()));
     }
 

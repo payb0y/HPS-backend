@@ -4,8 +4,6 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.Fetch;
-import org.hibernate.annotations.FetchMode;
 
 import javax.persistence.*;
 import java.util.ArrayList;
@@ -24,9 +22,12 @@ public class Group {
     @JoinTable(name="environment_groups",
     joinColumns = @JoinColumn(name="groups_name"),
     inverseJoinColumns = @JoinColumn(name="environment_name"))
+    @JsonIgnoreProperties("groups")
+
     private Collection<Environment> environments = new ArrayList<>();
 
     @ManyToMany(mappedBy = "groups",fetch = FetchType.LAZY)
+    @JsonIgnoreProperties("groups")
     private Collection<User> users = new ArrayList<>();
 
 }

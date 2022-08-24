@@ -1,6 +1,7 @@
 package com.internship.internshipapp.api;
 
 import com.internship.internshipapp.domain.Environment;
+import com.internship.internshipapp.dto.EnvironmentDTO;
 import com.internship.internshipapp.service.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -17,12 +18,12 @@ public class EnvironmentResource {
     private final UserService userService;
 
     @GetMapping("/environments")
-    public ResponseEntity<List<Environment>> getEnvironments() {
+    public ResponseEntity<List<EnvironmentDTO>> getEnvironments() {
         return ResponseEntity.ok().body(userService.getEnvironments());
     }
 
     @PostMapping("/environment/add")
-    public ResponseEntity addEnvironment(@RequestBody Environment environment) {
+    public ResponseEntity addEnvironment(@RequestBody EnvironmentDTO environment) {
         if (userService.getEnvironment(environment) == null) {
             userService.addEnvironment(environment);
             return ResponseEntity.ok().build();
@@ -31,7 +32,7 @@ public class EnvironmentResource {
     }
 
     @PostMapping("/environment/delete")
-    public ResponseEntity deleteEnvironment(@RequestBody Environment environment) {
+    public ResponseEntity deleteEnvironment(@RequestBody EnvironmentDTO environment) {
         if (userService.getEnvironment(environment) != null) {
             userService.removeEnvironment(environment);
             return ResponseEntity.ok().build();

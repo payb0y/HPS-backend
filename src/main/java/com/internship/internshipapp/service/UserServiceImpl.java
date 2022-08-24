@@ -4,7 +4,9 @@ import com.internship.internshipapp.domain.Environment;
 import com.internship.internshipapp.domain.Group;
 import com.internship.internshipapp.domain.Role;
 import com.internship.internshipapp.domain.User;
+import com.internship.internshipapp.dto.EnvironmentDTO;
 import com.internship.internshipapp.dto.GroupDTO;
+import com.internship.internshipapp.dto.RoleDTO;
 import com.internship.internshipapp.dto.UserDTO;
 import com.internship.internshipapp.repo.EnvironmentRepo;
 import com.internship.internshipapp.repo.GroupRepo;
@@ -13,6 +15,7 @@ import com.internship.internshipapp.repo.UserRepo;
 import com.internship.internshipapp.util.Utility;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
@@ -30,12 +33,26 @@ public class UserServiceImpl implements UserService {
     public List<Object> getUsers(){
         log.info("Fetching all users");
         return Utility.appendLdapGroupsToUsers(userRepo.findAll().stream().map(UserDTO::new).collect(Collectors.toList()));
-        //return Utility.appendLdapGroupsToUsers(userRepo.findAll());
     }
     @Override
     public List<GroupDTO> getGroups() {
         log.info("Fetching all groups");
         return groupRepo.findAll().stream().map(GroupDTO::new).collect(Collectors.toList());
+    }
+    public List<RoleDTO> getRole() {
+        log.info("Fetching all roles");
+        return roleRepo.findAll().stream().map(RoleDTO::new).collect(Collectors.toList());
+    }
+    public List<EnvironmentDTO> getEnvironments() {
+        log.info("Fetching all environments");
+        return environmentRepo.findAll().stream().map(EnvironmentDTO::new).collect(Collectors.toList());
+    }
+    public List<EnvironmentDTO> getUserEnvironments(String username){
+        log.info("Fetching user {} environments",username);
+        List<EnvironmentDTO> userEnvironments = new ArrayList<>();
+        userRepo.findByUsername(username)
+                .getGroups().forEach(group -> group.getEnvironments().forEach(environment -> userEnvironments.add(new EnvironmentDTO(environment))));
+        return userEnvironments;
     }
     @Override
     public void addUser(String username) {
@@ -45,44 +62,48 @@ public class UserServiceImpl implements UserService {
         userRepo.save(user);
     }
     @Override
-    public void addGroup(Group group) {
-        log.info("Saving new group {} to the database",group.getName());
+    public void addGroup(GroupDTO groupDTO) {
+        log.info("Saving new group {} to the database",groupDTO.getName());
+        Group group = new Group();
+        BeanUtils.copyProperties(groupDTO,group);
         groupRepo.save(group);
     }
 
-   public void addEnvironment(Environment environment){
-       log.info("Saving new environment {} to the database",environment.getName());
+   public void addEnvironment(EnvironmentDTO environmentDTO){
+       log.info("Saving new environment {} to the database",environmentDTO.getName());
+       Environment environment = new Environment();
+       BeanUtils.copyProperties(environmentDTO,environment);
        environmentRepo.save(environment);
    }
 
-    public List<Role> getRoles() {
-        log.info("Fetching all roles");
-        return roleRepo.findAll();
-    }
-    public List<Environment> getEnvironments() {
-        log.info("Fetching all environments");
-        return environmentRepo.findAll();
-    }
-    public List<Environment> getUserEnvironments(String username){
-        log.info("Fetching user {} environments",username);
-        List<Environment> userEnvironments = new ArrayList<>();
-        userRepo.findByUsername(username)
-                .getGroups().forEach(group -> group.getEnvironments().forEach(environment -> userEnvironments.add(environment)));
-         return userEnvironments;
-    }
-
-    @Override
-    public User getUser(String username) {
+    public UserDTO getUser(String username) {
         log.info("Fetching user {}",username);
-        return userRepo.findByUsername(username);
+        if(userRepo.findByUsername(username)==null)
+            return null;
+        UserDTO userDTO = new UserDTO(userRepo.findByUsername(username));
+        return userDTO;
     }
-    public Group getGroup(Group group) {
-        log.info("Fetching group {}",group.getName());
-        return groupRepo.findByName(group.getName());
-    }
-    public Environment getEnvironment(Environment environment){
+    public EnvironmentDTO getEnvironment(EnvironmentDTO environment){
         log.info("Fetching environment {}",environment.getName());
-        return environmentRepo.findByName(environment.getName());
+        if(environmentRepo.findByName(environment.getName())==null)
+            return null;
+        EnvironmentDTO environmentDTO = new EnvironmentDTO(environmentRepo.findByName(environment.getName()));
+        return environmentDTO;
+    }
+    public GroupDTO getGroup(GroupDTO group) {
+        log.info("Fetching group {}",group.getName());
+        if(groupRepo.findByName(group.getName())==null)
+            return null;
+        GroupDTO groupDTO = new GroupDTO(groupRepo.findByName(group.getName()));
+        return groupDTO;
+    }
+    public void removeGroup(GroupDTO group) {
+        log.info("removing group {} from the database", group.getName());
+        groupRepo.delete(groupRepo.findByName(group.getName()));
+    }
+    public void removeEnvironment(EnvironmentDTO environment){
+        log.info("removing environment {} from the database", environment.getName());
+        environmentRepo.delete(environmentRepo.findByName(environment.getName()));
     }
 
     public void addUserToGroups(String username, List<String> groupNames) {
@@ -107,13 +128,7 @@ public class UserServiceImpl implements UserService {
         Role role = roleRepo.findByName(roleName);
         user.setRole(role);
     }
-    public void removeGroup(Group group) {
-        log.info("removing group {} from the database", group.getName());
-        groupRepo.delete(groupRepo.findByName(group.getName()));
-    }
-    public void removeEnvironment(Environment environment){
-        log.info("removing environment {} from the database", environment.getName());
-        environmentRepo.delete(environment);
-    }
+
+
 
 }

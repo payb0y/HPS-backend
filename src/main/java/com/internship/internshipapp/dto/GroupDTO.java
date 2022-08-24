@@ -5,12 +5,13 @@ import com.internship.internshipapp.domain.Environment;
 import com.internship.internshipapp.domain.Group;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.stream.Collectors;
 
-@Data @NoArgsConstructor
+@Data @NoArgsConstructor @Slf4j
 public class GroupDTO {
     private String name;
     @JsonIgnoreProperties("groups")
@@ -20,7 +21,7 @@ public class GroupDTO {
 
 
     public GroupDTO(Group group) {
-
+    log.info(group.getName());
         this.name = group.getName();
         this.users = group.getUsers().stream().map(user->{
             UserDTO userDTO = new UserDTO();
